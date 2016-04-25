@@ -423,31 +423,6 @@ func toSliceType(i interface{}) (reflect.Type, error) {
 	return t.Elem(), nil
 }
 
-/*
-func MapScan(r ColScanner, dest map[string]interface{}) error {
-	// ignore r.started, since we needn't use reflect for anything.
-	columns, err := r.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := make([]interface{}, len(columns))
-	for i := range values {
-		values[i] = new(interface{})
-	}
-
-	err = r.Scan(values...)
-	if err != nil {
-		return err
-	}
-
-	for i, column := range columns {
-		dest[column] = *(values[i].(*interface{}))
-	}
-
-	return r.Err()
-}*/
-
 func selectRawSet(tdx Tdx, query string, args ...interface{}) ([]map[string]string, error) {
 	rows, err := tdx.Query(query, args...)
 	if err != nil {
