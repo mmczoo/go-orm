@@ -6,20 +6,19 @@ package orm
 import (
 	"bytes"
 	"database/sql"
-	qe "dayhole/error"
-	"dayhole/logger"
 	"errors"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 	"unicode"
-	//"strconv"
-	"strconv"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/xlvector/dlog"
 )
 
 var sqlParamReg *regexp.Regexp
@@ -147,7 +146,7 @@ func execWithParam(tdx Tdx, paramQuery string, paramMap interface{}) (sql.Result
 		paramQuery = sqlParamReg.ReplaceAllLiteralString(paramQuery, "?")
 		return tdx.Exec(paramQuery, args...)
 	} else {
-		logger.Warn("no parameter found in paramQuery string")
+		dlog.Warn("no parameter found in paramQuery string")
 		return tdx.Exec(paramQuery)
 	}
 }
@@ -1032,7 +1031,7 @@ func getFieldValue(param interface{}, fieldName string) (interface{}, error) {
 		if f.IsValid() {
 			return f.Interface(), nil
 		} else {
-			return nil, qe.NewQError("missing field "+fieldName, nil)
+			return nil, errors.New("missing field " + fieldName)
 		}
 	} else if v.Kind() == reflect.Struct {
 		f := v.FieldByName(fieldName)
@@ -1041,10 +1040,10 @@ func getFieldValue(param interface{}, fieldName string) (interface{}, error) {
 		if f.IsValid() {
 			return f.Interface(), nil
 		} else {
-			return nil, qe.NewQError("missing field "+fieldName, nil)
+			return nil, errors.New("missing field " + fieldName)
 		}
 	} else {
-		return nil, qe.NewQError(fmt.Sprintf("input interface type {%v} is not supported", v.Kind().String()), nil)
+		return nil, errors.New(fmt.Sprintf("input interface type {%v} is not supported", v.Kind().String()))
 	}
 }
 
