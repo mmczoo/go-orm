@@ -817,11 +817,15 @@ func columnsBySlice(s []interface{}) (string, string, []interface{}, []reflect.V
 	return cols, vals.String(), ret, pks, ais
 }
 
-func insert(tdx Tdx, s interface{}) error {
+func insert(tdx Tdx, s interface{}, ignore bool) error {
 	cols, vals, ifs, pk, isAi := columnsByStruct(s)
 	t := reflect.TypeOf(s).Elem()
 
-	q := fmt.Sprintf("insert into %s (%s) values(%s)", fieldName2ColName(t.Name()), cols, vals)
+	prefix := "insert"
+	if ignore {
+		prefix += " ignore"
+	}
+	q := fmt.Sprintf("%s into %s (%s) values(%s)", prefix, fieldName2ColName(t.Name()), cols, vals)
 	ret, err := tdx.Exec(q, ifs...)
 	if err != nil {
 		return err
@@ -838,7 +842,7 @@ func insert(tdx Tdx, s interface{}) error {
 	return nil
 }
 
-func insertBatch(tdx Tdx, s []interface{}) error {
+func insertBatch(tdx Tdx, s []interface{}, ignore bool) error {
 	if s == nil || len(s) == 0 {
 		return nil
 	}
@@ -846,7 +850,11 @@ func insertBatch(tdx Tdx, s []interface{}) error {
 	cols, vals, ifs, pks, ais := columnsBySlice(s)
 	t := reflect.TypeOf(s[0]).Elem()
 
-	q := fmt.Sprintf("insert into %s %s values %s", fieldName2ColName(t.Name()), cols, vals)
+	prefix := "insert"
+	if ignore {
+		prefix += " ignore"
+	}
+	q := fmt.Sprintf("%s into %s %s values %s", prefix, fieldName2ColName(t.Name()), cols, vals)
 	ret, err := tdx.Exec(q, ifs...)
 	if err != nil {
 		return err
@@ -870,8 +878,8 @@ type ORMer interface {
 	Select(interface{}, string, ...interface{}) error
 	SelectStr(string, ...interface{}) (string, error)
 	SelectInt(string, ...interface{}) (int64, error)
-	Insert(interface{}) error
-	InsertBatch([]interface{}) error
+	Insert(interface{}, bool) error
+	InsertBatch([]interface{}, bool) error
 	Exec(string, ...interface{}) (sql.Result, error)
 	ExecWithParam(string, interface{}) (sql.Result, error)
 	ExecWithRowAffectCheck(int64, string, ...interface{}) error
@@ -975,12 +983,12 @@ func (o *ORM) SelectInt(query string, args ...interface{}) (int64, error) {
 	return selectInt(o.db, query, args...)
 }
 
-func (o *ORM) Insert(s interface{}) error {
-	return insert(o.db, s)
+func (o *ORM) Insert(s interface{}, ignore bool) error {
+	return insert(o.db, s, ignore)
 }
 
-func (o *ORM) InsertBatch(s []interface{}) error {
-	return insertBatch(o.db, s)
+func (o *ORM) InsertBatch(s []interface{}, ignore bool) error {
+	return insertBatch(o.db, s, ignore)
 }
 
 func (o *ORM) ExecWithRowAffectCheck(n int64, query string, args ...interface{}) error {
@@ -1069,12 +1077,12 @@ func (o *ORMTran) SelectOne(s interface{}, query string, args ...interface{}) er
 	return selectOne(o.tx, s, query, args...)
 }
 
-func (o *ORMTran) Insert(s interface{}) error {
-	return insert(o.tx, s)
+func (o *ORMTran) Insert(s interface{}, ignore bool) error {
+	return insert(o.tx, s, ignore)
 }
 
-func (o *ORMTran) InsertBatch(s []interface{}) error {
-	return insertBatch(o.tx, s)
+func (o *ORMTran) InsertBatch(s []interface{}, ignore bool) error {
+	return insertBatch(o.tx, s, ignore)
 }
 
 func (o *ORMTran) Exec(query string, args ...interface{}) (sql.Result, error) {

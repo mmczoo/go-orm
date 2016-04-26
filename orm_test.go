@@ -19,7 +19,7 @@ type TestOrmA123 struct {
 	TestOrmDId  int64
 	OrmB        *TestOrmB999   `or:"has_one" table:"test_orm_b999"`
 	OrmCs       []*TestOrmC111 `or:"has_many" table:"test_orm_c111"`
-	OrmD	    *TestOrmD222   `or:"belongs_to" table:"test_orm_d222"`
+	OrmD        *TestOrmD222   `or:"belongs_to" table:"test_orm_d222"`
 	CreatedAt   time.Time      `ignore:"true"`
 	UpdatedAt   time.Time      `ignore:"true"`
 }
@@ -301,10 +301,10 @@ func TestOrmHasOneRelation(t *testing.T) {
 		}
 
 		objA2 := &TestOrmA123{
-			OtherId:   2,
-			TestOrmDId:  0,
-			StartDate: time.Now(),
-			EndDate:   time.Date(2000, 1, 1, 1, 0, 0, 0, time.Local),
+			OtherId:    2,
+			TestOrmDId: 0,
+			StartDate:  time.Now(),
+			EndDate:    time.Date(2000, 1, 1, 1, 0, 0, 0, time.Local),
 		}
 		orm.Insert(objA2)
 		orm.Insert(&TestOrmB999{
@@ -412,7 +412,7 @@ func TestOrmBelongsToRelation(t *testing.T) {
 		testObj := &TestOrmA123{
 			OtherId:     1,
 			Description: "test orm 1测试",
-			TestOrmDId: testObjD.TestOrmDId,
+			TestOrmDId:  testObjD.TestOrmDId,
 			StartDate:   time.Now(),
 			EndDate:     time.Now(),
 		}
@@ -446,7 +446,7 @@ func TestOrmBelongsToRelation(t *testing.T) {
 			t.Fatal("should have one ormd")
 		}
 		if testObj2.OrmB.TestId != testObj2.TestId || testObj2.OrmB.Description != testObjB.Description ||
-		testObj2.OrmB.NoAiId != testObjB.NoAiId {
+			testObj2.OrmB.NoAiId != testObjB.NoAiId {
 			t.Fatal("invalid ormb")
 		}
 		if testObj2.OrmD.TestOrmDId != testObjD.TestOrmDId || testObj2.Name != testObj2.Name {
@@ -459,10 +459,10 @@ func TestOrmBelongsToRelation(t *testing.T) {
 		orm.Insert(testObjD2)
 
 		objA2 := &TestOrmA123{
-			OtherId:   2,
+			OtherId:    2,
 			TestOrmDId: testObjD2.TestOrmDId,
-			StartDate: time.Now(),
-			EndDate:   time.Date(2000, 1, 1, 1, 0, 0, 0, time.Local),
+			StartDate:  time.Now(),
+			EndDate:    time.Date(2000, 1, 1, 1, 0, 0, 0, time.Local),
 		}
 		orm.Insert(objA2)
 		orm.Insert(&TestOrmB999{
@@ -473,7 +473,7 @@ func TestOrmBelongsToRelation(t *testing.T) {
 
 		orm.Insert(&TestOrmA123{
 			OtherId:     33,
-			TestOrmDId: testObjD2.TestOrmDId,
+			TestOrmDId:  testObjD2.TestOrmDId,
 			Description: "no ormb attached",
 			StartDate:   time.Now(),
 			EndDate:     time.Date(2100, 5, 3, 1, 0, 0, 0, time.Local),
@@ -564,10 +564,10 @@ func TestOrmBelongsToRelation(t *testing.T) {
 		orm.DoTransaction(f)
 
 		objA4 := &TestOrmA123{
-			OtherId:   2,
+			OtherId:    2,
 			TestOrmDId: 0,
-			StartDate: time.Now(),
-			EndDate:   time.Date(2000, 1, 1, 1, 0, 0, 0, time.Local),
+			StartDate:  time.Now(),
+			EndDate:    time.Date(2000, 1, 1, 1, 0, 0, 0, time.Local),
 		}
 		orm.Insert(objA4)
 		var loadOrmA4 TestOrmA123
