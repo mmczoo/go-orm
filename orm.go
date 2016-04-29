@@ -62,7 +62,7 @@ func reflectStructValue(v reflect.Value, cols []string, row *sql.Rows) error {
 	for k, c := range cols {
 		fv := v.FieldByName(colName2FieldName(c))
 		if !fv.CanAddr() {
-			log.Println("missing filed", c)
+			//log.Println("missing filed", c)
 			var b interface{}
 			targets[k] = &b
 		} else {
