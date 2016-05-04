@@ -573,7 +573,7 @@ func selectManyInternal(tdx Tdx, s interface{}, processOr bool, query string, ar
 				fname := colName2FieldName(c)
 				fv := v.Elem().FieldByName(fname)
 				if !fv.CanAddr() {
-					fmt.Printf("missing field: %s , query: %s", fname, query)
+					//fmt.Printf("missing field: %s , query: %s", fname, query)
 					var b interface{}
 					targets[k] = &b
 					continue
