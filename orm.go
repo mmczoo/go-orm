@@ -854,7 +854,8 @@ func insertBatch(tdx Tdx, s []interface{}, ignore bool) error {
 	if ignore {
 		prefix += " ignore"
 	}
-	q := fmt.Sprintf("%s into %s %s values %s", prefix, fieldName2ColName(t.Name()), cols, vals)
+
+	q := fmt.Sprintf("%s into %s %s values %s", prefix, GetMapTable(fieldName2ColName(t.Name())), cols, vals)
 	ret, err := tdx.Exec(q, ifs...)
 	if err != nil {
 		return err
@@ -888,6 +889,24 @@ type ORMer interface {
 type ORM struct {
 	db     *sql.DB
 	tables map[string]interface{}
+}
+
+var maptables = make(map[string]string)
+
+func SetMapTable(typename, tablename string) {
+	if len(typename) == 0 || len(tablename) == 0 {
+		return
+	}
+	maptables[typename] = tablename
+}
+
+//return typename if not exist
+func GetMapTable(typename string) string {
+	r, ok := maptables[typename]
+	if ok {
+		return r
+	}
+	return typename
 }
 
 func NewORM(ds string) *ORM {
